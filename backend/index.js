@@ -68,6 +68,38 @@ app.post("/posts", async (req, res) => {
   }
 });
 
+//PUT para likes
+app.put("/posts/like/:id", async (req, res) => {
+  try {
+    const {id} = req.params;
+
+    const query = 
+      "UPDATE posts SET likes = likes + 1 WHERE id = $1 RETURNING *";
+
+      const { rows} = await pool.query (query, [id]);
+      res.json (rows[0]);
+  } catch (error) {
+    console.error ("Error al dar like:", error);
+    res.status(500).json({error: "Error al dar like"});
+  }
+});
+
+
+//ruta DELETE
+app.delete("/posts/:id", async (req, res) => {
+  try {
+    const {id} = req.params;
+
+    const query = "DELETE FROM posts WHERE id = $1";
+    await pool.query(query, [id]);
+
+    res.sendStatus(204);
+  } catch (error) {
+    console.error("Error al eliminar post:", error);
+    res.status(500).json({error: "Error al eliminar post"});
+  }
+});
+
 
 // levantar servidor
 const PORT = 3000;
